@@ -1,0 +1,648 @@
+{
+  "navbar": {
+    "markets": "Mercados",
+    "investingHome": "Inicio de Inversión",
+    "portfolio": "Portafolio",
+    "deposit": "Depositar",
+    "cashOut": "Retirar",
+    "payment": "Depositar",
+    "payout": "Retiro",
+    "claiming": "Reclamando...",
+    "searchPlaceholder": "Buscar mercados...",
+    "restartTour": "Reiniciar tutorial",
+    "howItWorks": "¿Cómo funciona?",
+    "viewProfile": "Ver Perfil",
+    "more": "Más",
+    "swapToUsdc": "Cambiar a USDC",
+    "swapToUsdcSending": "Cambiando...",
+    "swapToUsdcTooltip": "Cambiar todo el USDC.e de tu billetera a USDC nativo",
+    "swapToUsdcErrorNoBalance": "No hay USDC.e en tu billetera"
+  },
+  "login": {
+    "loading": "Cargando...",
+    "connect": "Conectar"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a Bofet",
+      "subtitle": "Configuremos tu cuenta",
+      "progressLabel": "{{current}} de {{total}}",
+      "description": "La plataforma de mercados de predicción de próxima generación. Opera en eventos del mundo real con análisis profundo y onboarding sin fricciones.",
+      "step": "Paso 1 de 3",
+      "start": "Comenzar"
+    },
+    "source": {
+      "title": "¿Cómo nos conociste?",
+      "description": "Ayúdanos a entender cómo descubriste nuestra plataforma.",
+      "next": "Siguiente",
+      "step": "Paso 1 de 3",
+      "back": "Atrás",
+      "continue": "Continuar",
+      "options": {
+        "search_engine": "Google Search",
+        "friend_referral": "De un amigo",
+        "social_media": "Blog o Artículo",
+        "crypto_community": "Comunidad Crypto",
+        "twitter": "X (Twitter)",
+        "youtube": "YouTube",
+        "other": "Otro",
+        "social_media_legacy": {
+          "label": "Redes Sociales",
+          "description": "Twitter, Discord, Telegram"
+        },
+        "search_engine_legacy": {
+          "label": "Buscador Web",
+          "description": "Google, DuckDuckGo"
+        },
+        "friend_referral_legacy": {
+          "label": "Recomendación",
+          "description": "Un amigo me recomendó"
+        },
+        "crypto_community_legacy": {
+          "label": "Comunidad Crypto",
+          "description": "Foros, Reddit, etc."
+        },
+        "other_legacy": {
+          "label": "Otro",
+          "description": "Otra fuente"
+        }
+      }
+    },
+    "experience": {
+      "title": "¿Cuál es tu nivel de experiencia?",
+      "description": "Selecciona la opción que mejor describa tu experiencia en trading.",
+      "back": "Anterior",
+      "complete": "Completar",
+      "saving": "Guardando...",
+      "options": {
+        "beginner": {
+          "label": "Nuevo en Mercados de Predicción",
+          "description": "Apenas estoy empezando con los mercados de predicción"
+        },
+        "intermediate": {
+          "label": "Algo de Experiencia",
+          "description": "He operado en mercados de predicción antes"
+        },
+        "advanced": {
+          "label": "Trader Experimentado",
+          "description": "Opero regularmente en mercados de predicción"
+        },
+        "professional": {
+          "label": "Profesional",
+          "description": "Uso los mercados de predicción para trading profesional"
+        }
+      }
+    },
+    "video": {
+      "title": "Mira una introducción rápida",
+      "description": "Aprende cómo hacer tu primera predicción en Bofet.",
+      "continue": "Continuar"
+    },
+    "investor": {
+      "title": "¿Cuál es tu nivel de experiencia?",
+      "description": "Ayúdanos a personalizar tu experiencia",
+      "step": "Paso 2 de 3",
+      "back": "Atrás",
+      "continue": "Continuar",
+      "options": {
+        "beginner": {
+          "label": "Principiante",
+          "description": "Explorando crypto/predicciones"
+        },
+        "intermediate": {
+          "label": "Intermedio",
+          "description": "Experiencia con DeFi"
+        },
+        "advanced": {
+          "label": "Avanzado",
+          "description": "Trader/inversor activo"
+        },
+        "professional": {
+          "label": "Profesional",
+          "description": "Institucional/Experto"
+        }
+      }
+    }
+  },
+  "tour": {
+    "welcome": {
+      "title": "¡Bienvenido! 👋",
+      "description": "Te mostraremos lo básico en 3 pasos rápidos."
+    },
+    "claimTokens": {
+      "title": "Reclama tokens gratis",
+      "description": "Obtén tokens de testnet para probar la plataforma."
+    },
+    "marketCard": {
+      "title": "Explora mercados",
+      "description": "Haz clic en cualquier mercado para ver análisis detallados."
+    },
+    "marketBuy": {
+      "title": "Compra posiciones",
+      "description": "Aquí puedes comprar Sí o No en cualquier mercado."
+    },
+    "progress": "{{current}} de {{total}}",
+    "next": "Siguiente",
+    "done": "¡Entendido!"
+  },
+  "toast": {
+    "tokensClaimed": {
+      "title": "¡Tokens Reclamados!",
+      "description": "Transacción: {{hash}}"
+    },
+    "claimFailed": {
+      "title": "Reclamo Falló",
+      "description": "Hubo un error al reclamar tus tokens. Por favor intenta de nuevo."
+    }
+  },
+  "exploreMarkets": {
+    "categories": {
+      "all": "Todos",
+      "trending": "Tendencias",
+      "politics": "Política",
+      "crypto": "Cripto",
+      "sports": "Deportes",
+      "finance": "Finanzas",
+      "tech": "Tecnología",
+      "culture": "Cultura",
+      "geopolitics": "Geopolítica",
+      "science": "Ciencia"
+    }
+  },
+  "marketAnalysis": {
+    "backToMarkets": "Volver a Mercados",
+    "loadingMarketData": "Cargando datos del mercado...",
+    "marketNotFound": "Mercado no encontrado",
+    "verifiedPrediction": "Predicción Verificada",
+    "volume": "Volumen",
+    "totalShares": "Acciones Totales",
+    "optionAShares": "Acciones Opción A",
+    "endDate": "Fecha de Fin",
+    "aboutThisMarket": "Acerca de este mercado",
+    "optionA": "Opción A",
+    "optionB": "Opción B",
+    "trade": "Operar"
+  },
+  "portfolio": {
+    "totalInvesting": "Inversión Total",
+    "today": "Hoy",
+    "buyingPower": "Poder de Compra",
+    "deposit": "Depositar",
+    "positions": "Posiciones",
+    "market": "Mercado",
+    "price": "Precio",
+    "return": "Retorno",
+    "shares": "Acciones",
+    "avg": "Promedio:"
+  },
+  "market": {
+    "volume": "Vol.",
+    "buy": {
+      "errors": {
+        "amountGreaterThanZero": "La cantidad debe ser mayor a 0",
+        "connectWallet": "Por favor inicia sesión primero",
+        "checkApproval": "Falló al verificar el estado de aprobación",
+        "approveTokens": "Falló al aprobar tokens",
+        "selectOptionAndAmount": "Debes seleccionar una opción e ingresar una cantidad mayor a 0"
+      },
+      "approval": {
+        "title": "Aprobación Necesaria",
+        "description": "Necesitas aprobar la transacción antes de continuar.",
+        "approving": "Aprobando...",
+        "setApproval": "Establecer Aprobación"
+      },
+      "confirm": {
+        "title": "Confirmar Transacción",
+        "description": "Estás a punto de comprar",
+        "shares": "acción(es).",
+        "confirming": "Confirmando...",
+        "button": "Confirmar"
+      },
+      "input": {
+        "placeholder": "Ingresa cantidad",
+        "priceLabel": "1 {{option}} = 1 PREDICT"
+      },
+      "cancel": "Cancelar",
+      "success": {
+        "title": "¡Compra Exitosa!",
+        "description": "Compraste {{amount}} acciones de {{option}}"
+      },
+      "failed": {
+        "title": "Compra Falló",
+        "description": "Hubo un error procesando tu compra"
+      }
+    },
+    "resolved": {
+      "label": "Resuelto:",
+      "claimRewards": "Reclamar Recompensas",
+      "success": {
+        "title": "¡Recompensas Reclamadas!",
+        "description": "Tus ganancias han sido reclamadas exitosamente."
+      },
+      "failed": {
+        "title": "Reclamo Falló",
+        "description": "Hubo un error al reclamar tus recompensas. Por favor intenta de nuevo."
+      }
+    },
+    "shares": {
+      "title": "Tu Posición",
+      "label": "acciones"
+    }
+  },
+  "wallet": {
+    "connect": "Iniciar sesión",
+    "disconnect": "Desconectar",
+    "initializing": "Inicializando...",
+    "initializeSession": "Conectar terminal",
+    "initializingSession": "Conectando terminal...",
+    "clickHere": "Haz click aquí",
+    "initializeGuide": "Conectar terminal",
+    "connected": "Conectado",
+    "logoAlt": "Logo UseBofet",
+    "depositComingSoon": "Funcionalidad de depósito próximamente",
+    "pleaseLogin": "Hola, por favor inicia sesión para comenzar",
+    "disconnectConfirmTitle": "¿Cerrar sesión?",
+    "disconnectConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?",
+    "disconnectCancel": "Cancelar",
+    "disconnectConfirm": "Cerrar sesión"
+  },
+  "trading": {
+    "tabs": {
+      "positions": "Mis Posiciones",
+      "orders": "Órdenes Abiertas",
+      "markets": "Mercados"
+    },
+    "session": {
+      "title": "Sesión de Trading",
+      "ready": "Listo para Operar",
+      "notInitialized": "No Inicializada",
+      "active": "Sesión Activa",
+      "end": "Finalizar Sesión",
+      "notStarted": "No Iniciada",
+      "checking": "Verificando...",
+      "deploying": "Desplegando Safe...",
+      "credentials": "Creando Credenciales...",
+      "approvals": "Configurando Aprobaciones...",
+      "checkingSafe": "Verificando despliegue de Safe...",
+      "deployingSafe": "Desplegando boveda Safe...",
+      "gettingCredentials": "Obteniendo credenciales API del usuario...",
+      "settingApprovals": "Configurando todas las aprobaciones de tokens..."
+    },
+    "positions": {
+      "title": "Posiciones",
+      "showAll": "Mostrar Todo",
+      "hideDust": "Ocultar Polvo",
+      "size": "Tamaño",
+      "avgPrice": "Precio Promedio",
+      "currentPrice": "Precio Actual",
+      "currentValue": "Valor Actual",
+      "initialValue": "Valor Inicial",
+      "pnl": "P&L",
+      "shares": "acciones",
+      "eventCompleted": "Evento Completado - Posición Canjeable",
+      "redeeming": "Canjeando...",
+      "redeemPosition": "Canjear Posición",
+      "initializeFirst": "Inicializa la sesión de trading primero",
+      "marketSell": "Venta de Mercado",
+      "processing": "Procesando...",
+      "relayNotInitialized": "Cliente relay no inicializado",
+      "redeemFailed": "Error al canjear la posicion. Por favor intenta de nuevo.",
+      "loading": "Cargando posiciones...",
+      "errorLoading": "Error al cargar posiciones",
+      "noPositions": "No Hay Posiciones Abiertas",
+      "noPositionsMessage": "No tienes posiciones abiertas.",
+      "authRequired": "Autenticación Requerida",
+      "pleaseSignIn": "Por favor inicia sesión e inicializa tu sesión de trading para ver las posiciones.",
+      "myPositions": "Mis Posiciones",
+      "subtitle": "Gestiona y rastrea tus posiciones activas en el mercado",
+      "dustPositionsHidden": "posición(es) pequeñas ocultas",
+      "dustThreshold": "Posiciones con valor < $",
+      "redeemable": "Canjeable"
+    },
+    "orders": {
+      "market": "Mercado",
+      "loading": "Cargando...",
+      "price": "Precio",
+      "shares": "Acciones",
+      "total": "Total",
+      "id": "ID:",
+      "cancelling": "Cancelando...",
+      "cancelOrder": "Cancelar Orden",
+      "errorLoading": "Error al cargar órdenes",
+      "noOrders": "No Hay Órdenes Abiertas",
+      "noOrdersMessage": "No tienes órdenes límite abiertas."
+    },
+    "markets": {
+      "sortedBy": "Ordenado por volumen + liquidez",
+      "loadingMarkets": "Cargando mercados {{category}}...",
+      "errorLoading": "Error al cargar mercados",
+      "noMarkets": "No Hay Mercados Disponibles",
+      "noMarketsMessage": "No se encontraron mercados {{category}} activos."
+    },
+    "orderModal": {
+      "limitPriceRequired": "El precio límite es requerido",
+      "priceBetween": "El precio debe estar entre ${{min}} y ${{max}}",
+      "priceMultiple": "El precio debe ser un múltiplo del tamaño de tick (${{tickSize}})",
+      "placingOrder": "Colocando Orden...",
+      "placeOrder": "Colocar Orden",
+      "initializeClobFirst": "Inicializa el cliente CLOB primero",
+      "availableForOrders": "Disponible para órdenes",
+      "insufficientBalanceSafe": "Saldo insuficiente. Tu Safe tiene ${{amount}} USDC.e disponibles para órdenes. Fondea tu Safe desde Depósito para agregar más.",
+      "fundSafeToPlaceOrders": "Fondea tu Safe para colocar órdenes.",
+      "fundSafeViaDeposit": "Fondear Safe vía Depósito",
+      "fundingSafe": "Fondeando tu Safe…",
+      "convertingUsdc": "Convirtiendo USDC…",
+      "transferringToSafe": "Transfiriendo al Safe…",
+      "step1Of2": "Paso 1 de 2: Fondeando tu Safe",
+      "step2Of2": "Paso 2 de 2: Colocando orden"
+    }
+  },
+  "transfer": {
+    "title": "Enviar USDC.e",
+    "success": "¡Transferencia exitosa!",
+    "availableBalance": "Saldo Disponible",
+    "recipientAddress": "Dirección del Destinatario",
+    "recipientPlaceholder": "0x...",
+    "amount": "Cantidad (USDC.e)",
+    "amountPlaceholder": "0.00",
+    "max": "MÁX",
+    "sending": "Enviando...",
+    "send": "Enviar USDC.e",
+    "startSessionFirst": "Inicia una sesión de trading primero"
+  },
+  "deposit": {
+    "redirecting": "Te estamos redirigiendo, no cierres esta pantalla, espera a que se complete la transacción",
+    "infoNote": "Se abrirá una nueva ventana para que completes tu compra. Por favor completa la transacción en esa ventana."
+  },
+  "payment": {
+    "title": "Pago",
+    "currency": "Moneda",
+    "amount": "Monto",
+    "method": "Método",
+    "amountPlaceholder": "0",
+    "amountMinHint": "Mínimo {{min}} {{currency}}",
+    "submit": "Continuar",
+    "amountInvalid": "Ingresa un monto válido.",
+    "amountBelowMin": "El monto es menor al mínimo.",
+    "methodRequired": "Selecciona un método de pago.",
+    "equivalentUsd": "≈ ${{amount}} USD (USDC)",
+    "estimateReceive": "Recibirás aproximadamente ${{amount}} USD (USDC).",
+    "amountBelowMinUsd": "El mínimo es el equivalente a $13 USD.",
+    "methods": {
+      "applePay": "Apple Pay",
+      "swift": "Swift",
+      "spei": "SPEI"
+    }
+  },
+  "payout": {
+    "title": "Retiro",
+    "takeMoneyOut": "Sacar dinero",
+    "amountUsd": "Cuánto retirar (USD)",
+    "amountUsdPlaceholder": "0",
+    "currencyPreference": "Moneda de preferencia",
+    "method": "Método de retiro",
+    "noticeExchangeRate": "Tipo de cambio calculado al momento de la transacción.",
+    "submit": "Continuar",
+    "amountInvalid": "Ingresa un monto válido.",
+    "amountBelowMin": "Mínimo $13 USD.",
+    "methodRequired": "Selecciona un método de pago.",
+    "methods": {
+      "applePay": "Apple Pay",
+      "swift": "Swift",
+      "spei": "SPEI"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "connectToView": "Inicia sesión para ver tu perfil",
+    "accountVerified": "Cuenta verificada",
+    "safe": "Safe:",
+    "connected": "Conectado",
+    "sendFunds": "Enviar Fondos",
+    "sendUsdc": "Enviar USDC",
+    "walletInformation": "Información de cuenta",
+    "personalInformation": "Información Personal",
+    "personalInformationDesc": "Verifica tu perfil y KYC",
+    "security": "Seguridad",
+    "securityDesc": "2FA y cambios de contraseña",
+    "statements": "Estados de Cuenta",
+    "statementsDesc": "Historial de impuestos e informes mensuales",
+    "accountSettings": "CONFIGURACIÓN DE CUENTA",
+    "eoa": "EOA:",
+    "copyEoa": "Copiar dirección EOA",
+    "copySafe": "Copiar Bofet ID",
+    "deployed": "Desplegado:",
+    "credentials": "Credenciales:",
+    "approvals": "Aprobaciones:",
+    "predictionsWon": "PREDICCIONES GANADAS",
+    "totalRoi": "ROI TOTAL"
+  },
+  "fundSafe": {
+    "title": "Fondear tu Safe con USDC.e",
+    "description": "Convierte USDC nativo a USDC.e en tu billetera, luego transfiere a tu Safe. El tiempo total suele ser ~2 minutos cuando se ejecutan ambos pasos.",
+    "eoaLabel": "Tu billetera (EOA)",
+    "safeLabel": "Safe",
+    "nativeUsdc": "USDC nativo:",
+    "usdce": "USDC.e:",
+    "safeBalanceUnavailable": "—",
+    "startSessionToSeeBalance": "Inicia una sesión de trading para ver el saldo del Safe",
+    "step1Title": "Paso 1 — Convertir USDC → USDC.e",
+    "step1Helper": "Mínimo $2 USD. Suele tardar aproximadamente 1 minuto.",
+    "amountPlaceholder": "Monto (USD)",
+    "convertButton": "Convertir USDC → USDC.e",
+    "convertStatusFetching": "Obteniendo dirección del bridge…",
+    "convertStatusSending": "Enviando USDC…",
+    "convertStatusWaiting": "Convirtiendo a USDC.e (~1 min)…",
+    "convertStatusExtended": "Está tardando más de lo habitual — tus fondos están seguros.",
+    "convertComplete": "Conversión completada.",
+    "convertFallback": "Convirtiendo…",
+    "step2Title": "Paso 2 — Transferir USDC.e al Safe",
+    "step2Helper": "Enviando USDC.e a tu Safe. Suele tardar aproximadamente 1 minuto.",
+    "transferButton": "Transferir USDC.e al Safe",
+    "transferStatus": "Transfiriendo… (~1 min)",
+    "startSessionToTransfer": "Inicia una sesión de trading para habilitar la transferencia al Safe."
+  },
+  "common": {
+    "yes": "Sí",
+    "no": "No",
+    "set": "Configurado",
+    "notSet": "No Configurado",
+    "error": "Error",
+    "unknownError": "Error desconocido",
+    "goHome": "Ir al Inicio"
+  },
+  "emptyStates": {
+    "error": "Error",
+    "noMarkets": "No Hay Mercados Disponibles",
+    "noPositions": "No Hay Posiciones Abiertas",
+    "noOrders": "No Hay Órdenes Abiertas"
+  },
+  "howItWorksModal": {
+    "step1": {
+      "title": "1. Elige un Mercado Bofet",
+      "description": "Compra acciones 'Sí' o 'No' según tu capacidad intelectual. Comprar acciones es como apostarle al resultado. Los resultados cambian en tiempo real cuando otros traders ponen sus órdenes."
+    },
+    "step2": {
+      "title": "2. Envía orden de compra",
+      "description": "Fondea tu cuenta con crédito/débito, transferencia bancaria o incluso crypto. Una vez sea fondeada tu cuenta estás listo para participar. No hay límites ni comisiones."
+    },
+    "step3": {
+      "title": "3. Profit 🤑",
+      "description": "Vende tus acciones 'Sí' o 'No' en cualquier momento. O espera a que finalice un mercado para redimir tus ganancias a USD$1 por acción. Crea una cuenta y participa en minutos."
+    },
+    "next": "Siguiente",
+    "getStarted": "Comenzar",
+    "watchOnboardingVideo": "Ver tutorial ahora"
+  },
+  "footer": {
+    "slogan": "Tu moneda, tus eventos, tu idioma, en un segundo"
+  },
+  "helpBanner": {
+    "title": "¿Necesitas ayuda para comenzar?",
+    "day": "día",
+    "days": "días",
+    "close": "Cerrar",
+    "telegramMessagePrefix": "Mandanos un mensaje en",
+    "telegram": "telegram"
+  },
+  "signin": {
+    "title": "Iniciar Sesión en",
+    "welcomeBack": "Bienvenido de nuevo",
+    "subtitle": "Inicia sesión en tu cuenta para continuar con Bofet",
+    "signUpTitle": "Crea tu cuenta",
+    "signUpSubtitle": "Regístrate con tu correo para empezar a operar en Bofet",
+    "back": "Volver",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "continue": "Continuar",
+    "loading": "Cargando...",
+    "or": "o",
+    "noAccount": "¿No tienes cuenta?",
+    "signUp": "Regístrate",
+    "termsPrefix": "Al continuar, aceptas nuestros",
+    "termsOfService": "Términos de Servicio",
+    "and": "y",
+    "privacyPolicy": "Política de Privacidad",
+    "invalidEmail": "Por favor ingresa un correo electrónico válido",
+    "error": "Ocurrió un error durante el inicio de sesión"
+  },
+  "marketDetail": {
+    "header": {
+      "goBack": "Regresar",
+      "volume": "Vol.",
+      "bookmark": "Guardar",
+      "share": "Compartir"
+    },
+    "chart": {
+      "settings": "Configuración"
+    },
+    "orderBook": {
+      "title": "Libro de Órdenes",
+      "toggleOrderBook": "Alternar libro de órdenes",
+      "tradeYes": "Operar Sí",
+      "tradeNo": "Operar No",
+      "price": "PRECIO",
+      "shares": "ACCIONES",
+      "total": "TOTAL",
+      "asks": "Ventas",
+      "bids": "Compras",
+      "last": "Último:",
+      "spread": "Diferencia:"
+    },
+    "rules": {
+      "title": "Reglas",
+      "showLess": "Mostrar menos",
+      "showMore": "Mostrar más",
+      "volume": "Volumen",
+      "endDate": "Fecha de Fin",
+      "createdAt": "Creado el",
+      "resolver": "Resolutor",
+      "proposeResolution": "Proponer resolución"
+    },
+    "tabs": {
+      "comments": "Comentarios",
+      "holders": "Poseedores",
+      "activity": "Actividad",
+      "addComment": "Agregar un comentario",
+      "post": "Publicar",
+      "bewareExternalLinks": "Cuidado con enlaces externos.",
+      "newest": "Más recientes",
+      "holdersFilter": "Poseedores",
+      "yesHolders": "Poseedores de Sí",
+      "noHolders": "Poseedores de No",
+      "shares": "acciones",
+      "bought": "compró",
+      "sold": "vendió",
+      "at": "a",
+      "minAmount": "Monto mínimo"
+    },
+    "tradingButtons": {
+      "yes": "Sí",
+      "no": "No"
+    },
+    "bottomSheetTrading": {
+      "limitPrice": "Precio Límite",
+      "shares": "Acciones",
+      "amount": "Monto",
+      "setExpiration": "Establecer expiración",
+      "total": "Total",
+      "toWin": "A ganar",
+      "youllReceive": "Recibirás",
+      "trade": "Operar",
+      "termsMessage": "Al operar, aceptas los",
+      "termsLink": "Términos de Uso"
+    },
+    "tradingModal": {
+      "buy": "Comprar",
+      "sell": "Vender",
+      "limit": "Límite",
+      "market": "Mercado",
+      "yes": "Sí",
+      "no": "No",
+      "limitPrice": "Precio Límite",
+      "amount": "Monto",
+      "shares": "Acciones",
+      "setExpiration": "Establecer Expiración",
+      "total": "Total",
+      "toWin": "A ganar",
+      "youllGet": "Recibirás",
+      "youllReceive": "Recibirás",
+      "trade": "Operar",
+      "quickButtons": {
+        "minus100": "-100",
+        "minus10": "-10",
+        "plus10": "+10",
+        "plus100": "+100",
+        "percent25": "25%",
+        "percent50": "50%"
+      }
+    },
+    "openOrders": {
+      "title": "Órdenes Abiertas",
+      "side": "Tipo",
+      "size": "Shares",
+      "price": "Precio",
+      "total": "Total",
+      "buy": "Compra",
+      "sell": "Venta",
+      "cancel": "Cancelar",
+      "empty": "No tienes órdenes abiertas"
+    }
+  },
+  "reportBug": {
+    "title": "Reportar un error",
+    "intro": "El equipo de desarrollo recibirá directamente tu reporte. Para reportar el incidente, utiliza ahora mismo nuestro proveedor gratuito JAM DEV y comparte conmigo la liga de la grabación a través de este cuestionario.",
+    "jamChrome": "JAM DEV está disponible en Chrome.",
+    "jamLink": "https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci",
+    "thanks": "¡Gracias por tu cooperación!",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
+    "messageLabel": "Describe el error",
+    "messagePlaceholder": "Qué pasó, qué esperabas, en qué página estabas...",
+    "jamUrlLabel": "Liga de la grabación de Jam",
+    "jamUrlPlaceholder": "https://jam.dev/c/...",
+    "submit": "Enviar reporte",
+    "submitting": "Enviando...",
+    "success": "Gracias. Hemos recibido tu reporte y la liga de Jam. El equipo lo revisará pronto."
+  }
+}

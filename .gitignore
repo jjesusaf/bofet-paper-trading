@@ -4,6 +4,7 @@ deno_test/
 deno_test
 plans/
 .env*
+!.env.example
 .env.local
 .cursor*
 .cursor/

@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import Card from "@/components/shared/Card";
 import ActiveOrders from "@/components/Trading/Orders";
-import UserPositions from "@/components/Trading/Positions";
+import PaperUserPositions from "@/components/Trading/Positions/PaperUserPositions";
 import HighVolumeMarkets from "@/components/Trading/Markets";
 
 type TabId = "positions" | "orders" | "markets";
@@ -25,7 +25,7 @@ export default function MarketTabs(props: MarketTabsProps = {}) {
     <Card className="px-6">
       {/* Tab Content */}
       <div>
-        {activeTab === "positions" && <UserPositions />}
+        {activeTab === "positions" && <PaperUserPositions />}
         {activeTab === "orders" && <ActiveOrders />}
         {activeTab === "markets" && <HighVolumeMarkets />}
       </div>

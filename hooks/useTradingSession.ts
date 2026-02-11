@@ -54,19 +54,15 @@ export default function useTradingSession() {
   }, [eoaAddress]);
 
   // Restores the relay client when session exists
-  useEffect(() => {
-    if (tradingSession && !relayClient && eoaAddress && walletClient) {
-      initializeRelayClient().catch((err) => {
-        console.error("Failed to restore relay client:", err);
-      });
-    }
-  }, [
-    tradingSession,
-    relayClient,
-    eoaAddress,
-    walletClient,
-    initializeRelayClient,
-  ]);
+  // DESPUÉS:
+  // Paper trading: relay client de Polymarket no es necesario en Base Sepolia
+  // useEffect(() => {
+  //     if (tradingSession && !relayClient && eoaAddress && walletClient) {
+  //         initializeRelayClient().catch((err) => {
+  //             console.error("Failed to restore relay client:", err);
+  //         });
+  //     }
+  // }, [tradingSession, relayClient, eoaAddress, walletClient, initializeRelayClient]);
 
   // The core function that orchestrates the trading session initialization
   const initializeTradingSession = useCallback(async () => {
@@ -105,7 +101,7 @@ export default function useTradingSession() {
         console.log("[useTradingSession] Safe deployed successfully", {
           safeAddress: derivedSafeAddressFromEoa,
         });
-        
+
         // Track wallet creation goal via backend route
         try {
           await fetch("/api/datafast/goal", {
@@ -121,14 +117,14 @@ export default function useTradingSession() {
           // Log error but don't block the flow
           console.error("[useTradingSession] Failed to track wallet creation goal", err);
         }
-        
+
         // Store the creation timestamp in Redis
         const timestamp = new Date().toISOString();
         console.log("[useTradingSession] Attempting to store member since timestamp", {
           safeAddress: derivedSafeAddressFromEoa,
           timestamp,
         });
-        
+
         try {
           const response = await fetch("/api/redis", {
             method: "POST",

@@ -10,13 +10,15 @@ import ErrorState from "@/components/shared/ErrorState";
 import EmptyState from "@/components/shared/EmptyState";
 import MarketCard from "@/components/Trading/Markets/MarketCard";
 import CategoryTabs from "@/components/Trading/Markets/CategoryTabs";
-import OrderPlacementModal from "@/components/Trading/OrderModal";
+import PaperOrderModal from "@/components/Trading/OrderModal/PaperOrderModal";
 
 export default function HighVolumeMarkets() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategoryId>(DEFAULT_CATEGORY);
   const [selectedOutcome, setSelectedOutcome] = useState<{
     marketTitle: string;
+    marketImage: string;
+    marketSlug: string;
     outcome: string;
     price: number;
     tokenId: string;
@@ -40,9 +42,11 @@ export default function HighVolumeMarkets() {
     outcome: string,
     price: number,
     tokenId: string,
-    negRisk: boolean
+    negRisk: boolean,
+    marketImage: string,
+    marketSlug: string
   ) => {
-    setSelectedOutcome({ marketTitle, outcome, price, tokenId, negRisk });
+    setSelectedOutcome({ marketTitle, marketImage, marketSlug, outcome, price, tokenId, negRisk });
     setIsModalOpen(true);
   };
 
@@ -109,12 +113,14 @@ export default function HighVolumeMarkets() {
         )}
       </div>
 
-      {/* Order Placement Modal */}
+      {/* Paper Order Modal (buy only) */}
       {selectedOutcome && (
-        <OrderPlacementModal
+        <PaperOrderModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           marketTitle={selectedOutcome.marketTitle}
+          marketImage={selectedOutcome.marketImage}
+          marketSlug={selectedOutcome.marketSlug}
           outcome={selectedOutcome.outcome}
           currentPrice={selectedOutcome.price}
           tokenId={selectedOutcome.tokenId}

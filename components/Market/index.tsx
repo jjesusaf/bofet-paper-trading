@@ -7,7 +7,6 @@ import OrderBook from './OrderBook'
 import Rules from './Rules'
 import OpenOrdersPanel from './OpenOrdersPanel'
 import TradingButtons from './TradingButtons'
-import TradingModal from './TradingModal'
 import { formatVolume } from '@/utils/formatting'
 import useMarketBySlug from '@/hooks/useMarketBySlug'
 import MarketHeaderSkeleton from './SkeletonMarketPage/MarketHeaderSkeleton'
@@ -15,6 +14,7 @@ import MarketTitleSkeleton from './SkeletonMarketPage/MarketTitleSkeleton'
 import ChartSectionSkeleton from './SkeletonMarketPage/ChartSectionSkeleton'
 import OrderBookSkeleton from './SkeletonMarketPage/OrderBookSkeleton'
 import RulesSkeleton from './RulesSkeleton'
+import TradingPaperModal from './TradingPaperModal'
 
 interface MarketDetailContentProps {
   marketSlug: string
@@ -395,17 +395,19 @@ export default function MarketDetailContent({ marketSlug }: MarketDetailContentP
           noPriceNum={noPriceNum}
           marketTitle={title}
           marketImage={imageUrl}
+          marketSlug={marketSlug}
           yesTokenId={marketData.clobTokenIds ? JSON.parse(marketData.clobTokenIds)[0] : undefined}
           noTokenId={marketData.clobTokenIds ? JSON.parse(marketData.clobTokenIds)[1] : undefined}
           negRisk={marketData.negRisk}
         />
 
         {/* Trading Modal para OrderBook clicks en mobile */}
-        <TradingModal
+        <TradingPaperModal
           isOpen={isMobileModalOpen}
           onClose={() => setIsMobileModalOpen(false)}
           marketTitle={title}
           marketImage={imageUrl}
+          marketSlug={marketSlug}
           yesPrice={yesPriceNum}
           noPrice={noPriceNum}
           yesTokenId={marketData.clobTokenIds ? JSON.parse(marketData.clobTokenIds)[0] : undefined}
@@ -478,9 +480,10 @@ export default function MarketDetailContent({ marketSlug }: MarketDetailContentP
 
           {/* Right Column: Trading Modal (only on desktop, takes 4 cols) */}
           <div className="hidden lg:block lg:col-span-4">
-            <TradingModal
+            <TradingPaperModal
               marketTitle={title}
               marketImage={imageUrl}
+              marketSlug={marketSlug}
               yesPrice={yesPriceNum}
               noPrice={noPriceNum}
               yesTokenId={marketData.clobTokenIds ? JSON.parse(marketData.clobTokenIds)[0] : undefined}

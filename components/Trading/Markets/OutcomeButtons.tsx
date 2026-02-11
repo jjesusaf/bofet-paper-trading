@@ -14,7 +14,9 @@ interface OutcomeButtonsProps {
     outcome: string,
     price: number,
     tokenId: string,
-    negRisk: boolean
+    negRisk: boolean,
+    marketImage: string,
+    marketSlug: string
   ) => void;
 }
 
@@ -49,7 +51,9 @@ export default function OutcomeButtons({
                   outcome,
                   price,
                   tokenId,
-                  negRisk
+                  negRisk,
+                  "",
+                  ""
                 );
               }
             }}

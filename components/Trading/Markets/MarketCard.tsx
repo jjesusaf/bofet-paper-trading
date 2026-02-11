@@ -14,7 +14,9 @@ interface MarketCardProps {
     outcome: string,
     price: number,
     tokenId: string,
-    negRisk: boolean
+    negRisk: boolean,
+    marketImage: string,
+    marketSlug: string
   ) => void;
 }
 
@@ -54,7 +56,7 @@ export default function MarketCard({
 
   const handleOutcomeClick = (outcome: string, price: number, tokenId: string, index: number) => {
     if (!disabled && !isClosed && tokenId) {
-      onOutcomeClick(market.question, outcome, price, tokenId, negRisk);
+      onOutcomeClick(market.question, outcome, price, tokenId, negRisk, market.icon || "", market.slug || "");
     }
   };
 

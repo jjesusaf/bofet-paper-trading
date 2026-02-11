@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useDictionary } from '@/providers/dictionary-provider'
-import TradingModal from './TradingModal'
+import TradingPaperModal from './TradingPaperModal'
 
 interface TradingButtonsProps {
   yesPrice?: string
@@ -11,12 +11,12 @@ interface TradingButtonsProps {
   noPriceNum?: number
   marketTitle?: string
   marketImage?: string
+  marketSlug?: string
   yesTokenId?: string
   noTokenId?: string
   negRisk?: boolean
   onBuyYes?: () => void
   onBuyNo?: () => void
-  
 }
 
 export default function TradingButtons({
@@ -26,12 +26,12 @@ export default function TradingButtons({
   noPriceNum,
   marketTitle,
   marketImage,
+  marketSlug,
   yesTokenId,
   noTokenId,
   negRisk,
   onBuyYes,
   onBuyNo,
-
 }: TradingButtonsProps) {
   const { dict } = useDictionary()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -89,12 +89,13 @@ export default function TradingButtons({
         </div>
       </div>
 
-      {/* Trading Modal - acts as bottom sheet on mobile */}
-      <TradingModal
+      {/* Trading Paper Modal - acts as bottom sheet on mobile */}
+      <TradingPaperModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         marketTitle={marketTitle}
         marketImage={marketImage}
+        marketSlug={marketSlug}
         yesPrice={yesPriceNum}
         noPrice={noPriceNum}
         yesTokenId={yesTokenId}
@@ -102,7 +103,6 @@ export default function TradingButtons({
         negRisk={negRisk}
         selectedOutcome={selectedOutcome}
         externalOrderType="market"
-     
       />
     </>
   )

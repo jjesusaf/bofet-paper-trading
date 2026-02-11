@@ -2,6 +2,7 @@
 
   import { useState, useEffect } from 'react'
   import { useDictionary } from '@/providers/dictionary-provider'
+  import { useCurrency } from '@/providers/CurrencyContext'
   import { useWallet } from '@/providers/WalletContext'
   import usePaperOrder from '@/hooks/usePaperOrder'
   import useTickSize from '@/hooks/useTickSize'
@@ -47,6 +48,7 @@
     onOutcomeChange,
   }: TradingPaperModalProps) {
     const { dict } = useDictionary()
+    const { formatUsd } = useCurrency()
     const { eoaAddress } = useWallet()
     const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy')
     const [orderType, setOrderType] = useState<'limit' | 'market'>(() => {
@@ -181,7 +183,7 @@
 
         if (tradeType === 'buy' && amountPmt > availableBalance) {
           setLocalError(
-            `Balance insuficiente. Necesitas ${amountPmt.toFixed(2)} PMT pero tienes ${availableBalance.toFixed(2)} PMT disponibles. Usa "Recibir PMT" para obtener mas.`
+            `Balance insuficiente. Necesitas ${formatUsd(amountPmt)} pero tienes ${formatUsd(availableBalance)} disponibles. Usa "Recibir PMT" para obtener mas.`
           )
           return
         }
@@ -313,9 +315,6 @@
               />
               <div>
                 <h2 className="text-lg font-bold text-base-content">{marketTitle}</h2>
-                <span className="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
-                  Paper Trading
-                </span>
               </div>
             </div>
 
@@ -520,8 +519,8 @@
                     <span className="text-sm font-bold text-base-content">
                       {orderType === 'market' ? dict.marketDetail.tradingModal.amount : dict.marketDetail.tradingModal.total}
                     </span>
-                    <span className="text-base font-bold text-purple-700">
-                      {total.toFixed(2)} PMT
+                    <span className="text-base font-bold text-primary">
+                      {formatUsd(total)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -535,7 +534,7 @@
                       </svg>
                     </div>
                     <span className="text-base font-bold text-success">
-                      {orderType === 'market' ? `${sharesNum.toFixed(2)} shares` : `${toWin.toFixed(2)} PMT`}
+                      {orderType === 'market' ? `${sharesNum.toFixed(2)} shares` : formatUsd(toWin)}
                     </span>
                   </div>
                 </>
@@ -549,7 +548,7 @@
                     </svg>
                   </div>
                   <span className="text-base font-bold text-success">
-                    {total.toFixed(2)} PMT
+                    {formatUsd(total)}
                   </span>
                 </div>
               )}
@@ -567,7 +566,7 @@
                 } else if (orderStatus === 'transferring-pmt') {
                   buttonLabel = progressMessage?.includes('confirmación')
                     ? 'Esperando confirmación...'
-                    : 'Transfiriendo PMT...'
+                    : 'Transfiriendo…'
                 } else if (orderStatus === 'saving-position') {
                   buttonLabel = 'Guardando posición...'
                 } else {
@@ -601,7 +600,7 @@
                   )}
                   {eoaAddress && (
                     <p className="text-xs text-gray-500 mt-2">
-                      Disponible: <span className="font-semibold text-purple-700">{availableBalance.toFixed(2)} PMT</span>
+                      Disponible: <span className="font-semibold text-base-content">{formatUsd(availableBalance)}</span>
                     </p>
                   )}
                 </>

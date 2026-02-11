@@ -5,6 +5,7 @@ import { useWallet } from "@/providers/WalletContext";
 import usePaperOrder from "@/hooks/usePaperOrder";
 import useTickSize from "@/hooks/useTickSize";
 import { useDictionary } from "@/providers/dictionary-provider";
+import { useCurrency } from "@/providers/CurrencyContext";
 import { isValidDecimalInput } from "@/utils/validation";
 
 import Portal from "@/components/Portal";
@@ -55,6 +56,7 @@ export default function PaperOrderModal({
 
   const { eoaAddress } = useWallet();
   const { dict } = useDictionary();
+  const { formatUsd } = useCurrency();
   const modalRef = useRef<HTMLDivElement>(null);
 
   const { tickSize, isLoading: isLoadingTickSize } = useTickSize(
@@ -143,7 +145,7 @@ export default function PaperOrderModal({
 
       if (amountPmt > availableBalance) {
         setLocalError(
-          `Balance insuficiente. Necesitas ${amountPmt.toFixed(2)} PMT pero tienes ${availableBalance.toFixed(2)} PMT disponibles. Usa "Recibir PMT" para obtener más.`
+          `Balance insuficiente. Necesitas ${formatUsd(amountPmt)} pero tienes ${formatUsd(availableBalance)} disponibles. Usa "Recibir PMT" para obtener más.`
         );
         return;
       }
@@ -199,12 +201,7 @@ export default function PaperOrderModal({
           {/* Header */}
           <div className="flex items-start justify-between pb-4 mb-4 border-b border-base-300">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-bold text-base-content">{marketTitle}</h3>
-                <span className="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
-                  Paper
-                </span>
-              </div>
+              <h3 className="text-lg font-bold text-base-content mb-1">{marketTitle}</h3>
               <p className={`text-sm font-medium ${isYes ? "text-success" : "text-error"}`}>
                 Comprando: {displayOutcome}
               </p>
@@ -317,8 +314,8 @@ export default function PaperOrderModal({
             <div className="space-y-3 mb-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-bold text-base-content">Total</span>
-                <span className="text-base font-bold text-purple-700">
-                  {total.toFixed(2)} PMT
+                <span className="text-base font-bold text-primary">
+                  {formatUsd(total)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -342,7 +339,7 @@ export default function PaperOrderModal({
               } else if (orderStatus === "transferring-pmt") {
                 buttonLabel = progressMessage?.includes("confirmación")
                   ? "Esperando confirmación..."
-                  : "Transfiriendo PMT...";
+                  : "Transfiriendo…";
               } else if (orderStatus === "saving-position") {
                 buttonLabel = "Guardando posición...";
               } else {
@@ -377,7 +374,7 @@ export default function PaperOrderModal({
                 )}
                 {eoaAddress && (
                   <p className="text-xs text-gray-500 mt-2">
-                    Disponible: <span className="font-semibold text-purple-700">{availableBalance.toFixed(2)} PMT</span>
+                    Disponible: <span className="font-semibold text-base-content">{formatUsd(availableBalance)}</span>
                   </p>
                 )}
               </>

@@ -1,84 +1,163 @@
-# Polymarket Safe Proxy - Magic Link Embedded Wallets Integration Demo
+# Bofet Paper Trading
 
-A Next.js application demonstrating how to integrate Polymarket's **CLOB Client** and **Builder Relayer Client** for gasless trading with builder order attribution, using **Magic Link** for web2-style authentication and non-custodial wallet provisioning.
+Paper trading platform built on top of Polymarket markets. Practice prediction market trading with **PMT tokens** on Base Sepolia testnet — no real money involved.
 
-This demo shows developers how to:
-
-- Authenticate users via **Magic Link** email login for web2-style onboarding
-- Provision an **EOA wallet** automatically via Magic's **TKMS** (TEE Key Management System)
-- Deploy a **Gnosis Safe Proxy Wallet** using the **builder-relayer-client**
-- Obtain **User API Credentials** from the CLOB
-- Set **token approvals** for CTF Contract, CTF Exchange, Neg Risk Exchange, and Neg Risk Adapter
-- Place orders with **builder attribution** using remote signing
+Users browse real Polymarket markets, place simulated buy/sell orders using PMT (a testnet ERC-20 token), and track their positions with real-time P&L based on actual market prices.
 
 ---
 
-## Table of Contents
+## How It Works
 
-1. [Prerequisites](#prerequisites)
-2. [Quick Start](#quick-start)
-3. [Core Integration Patterns](#core-integration-patterns)
-   - [Flow Overview](#flow-overview)
-   - [New User Flow](#new-user-flow)
-   - [Returning User Flow](#returning-user-flow)
-4. [Key Implementation Details](#key-implementation-details)
-   - [1. Magic Link Authentication](#1-magic-link-authentication)
-   - [2. Builder Config with Remote Signing](#2-builder-config-with-remote-signing)
-   - [3. RelayClient Initialization](#3-relayclient-initialization)
-   - [4. Safe Deployment](#4-safe-deployment)
-   - [5. User API Credentials](#5-user-api-credentials)
-   - [6. Token Approvals](#6-token-approvals)
-   - [7. Authenticated ClobClient](#7-authenticated-clobclient)
-   - [8. Placing Orders](#8-placing-orders)
-5. [Project Structure](#project-structure)
-6. [Environment Variables](#environment-variables)
-7. [Key Dependencies](#key-dependencies)
+1. User logs in with **Magic Link** (email-based, no extensions needed)
+2. Claims free **PMT tokens** from the faucet (10 PMT per claim, 100 PMT daily limit)
+3. Browses real Polymarket markets with live prices
+4. Places paper orders — PMT is transferred on-chain to a vault, position is recorded in Supabase
+5. Sells positions at current market price — vault returns PMT to user
+6. Tracks P&L in real-time using Polymarket's CLOB midpoint prices
 
----
+### Architecture
 
-## Prerequisites
-
-Before running this demo, you need:
-
-1. **Builder API Credentials** from Polymarket
-   - Visit `polymarket.com/settings?tab=builder` to obtain your Builder credentials
-   - You'll need: `API_KEY`, `SECRET`, and `PASSPHRASE`
-
-2. **Polygon RPC URL**
-   - Any Polygon mainnet RPC (Alchemy, Infura, or public RPC)
-
-3. **Magic Link API Key**
-   - Sign up at [magic.link](https://magic.link/) and create an app
-   - Get your **Publishable API Key** from the Magic Dashboard
+```
+User (email login)
+       |
+  [Magic Link Auth]
+       |
+  Magic EOA (Base Sepolia + Polygon)
+       |
+  +----+----+
+  |         |
+  |    [PMT Faucet]
+  |    /api/claim-pmt
+  |    Sends 10 PMT + gas ETH
+  |         |
+  |    [Paper Trading]
+  |    Buy: user transfers PMT to vault (on-chain)
+  |         + saves position in Supabase
+  |    Sell: vault returns PMT to user (server-signed)
+  |         + updates position in Supabase
+  |         |
+  |    [Market Data]
+  |    Polymarket CLOB API (real prices)
+  |    /api/polymarket/midpoint (proxy)
+  |         |
+  +----+----+
+       |
+  [Supabase DB]
+  paper_positions, paper_trades, pmt_claims
+```
 
 ---
 
 ## Quick Start
 
+### Prerequisites
+
+- Node.js 18+ or Bun
+- A [Magic Link](https://magic.link/) API key
+- A [Supabase](https://supabase.com/) project
+- A wallet with PMT tokens + ETH on Base Sepolia (for the faucet/vault)
+- [Polymarket Builder credentials](https://polymarket.com/settings?tab=builder) (for market data signing)
+
 ### Installation
 
 ```bash
 npm install
+# or
+bun install
 ```
 
 ### Environment Setup
 
-Create `.env.local`:
+Copy `.env.example` to `.env.local` and fill in the values:
 
 ```bash
-# Polygon RPC endpoint
-NEXT_PUBLIC_POLYGON_RPC_URL=your_RPC_URL
-
-# Magic Link API key (from magic.link dashboard)
-NEXT_PUBLIC_MAGIC_API_KEY=pk_live_XXXXXXXXXXXXXXXX
-
-# Builder credentials (from polymarket.com/settings?tab=builder)
-POLYMARKET_BUILDER_API_KEY=your_builder_api_key
-POLYMARKET_BUILDER_SECRET=your_builder_secret
-POLYMARKET_BUILDER_PASSPHRASE=your_builder_passphrase
+cp .env.example .env.local
 ```
 
-### Run Development Server
+**Required variables:**
+
+```bash
+# Magic Link (auth + wallets)
+NEXT_PUBLIC_MAGIC_API_KEY=pk_live_YOUR_KEY
+
+# Supabase (positions, trades, claims)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_anon_key
+
+# Paper Trading / PMT (Base Sepolia)
+PMT_FAUCET_PRIVATE_KEY=0xYourFaucetPrivateKey
+NEXT_PUBLIC_PMT_VAULT_ADDRESS=0xYourVaultAddress
+
+# Polymarket Builder API (market data)
+POLYMARKET_BUILDER_API_KEY=your_api_key
+POLYMARKET_BUILDER_SECRET=your_secret
+POLYMARKET_BUILDER_PASSPHRASE=your_passphrase
+
+# Polygon RPC (for market data)
+NEXT_PUBLIC_POLYGON_RPC_URL=https://polygon-rpc.com
+
+# Redis (caching, rate limiting)
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_token
+```
+
+See `.env.example` for all available variables including optional ones.
+
+### Database Setup
+
+Create the following tables in your Supabase project:
+
+```sql
+-- Paper trading positions
+create table paper_positions (
+  id uuid primary key default gen_random_uuid(),
+  user_address text not null,
+  token_id text not null,
+  outcome text not null,
+  status text not null default 'open',
+  shares numeric not null default 0,
+  entry_price numeric not null,
+  cost numeric not null,
+  exit_price numeric,
+  realized_pnl numeric not null default 0,
+  market_title text not null,
+  market_image text,
+  market_slug text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  closed_at timestamptz
+);
+
+-- Trade history
+create table paper_trades (
+  id uuid primary key default gen_random_uuid(),
+  user_address text not null,
+  position_id uuid references paper_positions(id),
+  token_id text not null,
+  side text not null,
+  shares numeric not null,
+  price numeric not null,
+  total numeric not null,
+  created_at timestamptz default now()
+);
+
+-- PMT faucet claim tracking
+create table pmt_claims (
+  id uuid primary key default gen_random_uuid(),
+  user_address text not null,
+  amount numeric not null default 10,
+  tx_hash text,
+  created_at timestamptz default now()
+);
+```
+
+Regenerate types after creating tables:
+
+```bash
+npm run gen:types
+```
+
+### Run
 
 ```bash
 npm run dev
@@ -88,666 +167,88 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Core Integration Patterns
-
-### Flow Overview
-
-This application demonstrates two distinct user flows:
-
-#### **New User Flow**
-
-1. User authenticates via Magic email login
-2. Magic provisions a non-custodial EOA wallet via TKMS
-3. Initialize **RelayClient** with builder config
-4. Derive Safe address (deterministic from Magic EOA)
-5. Deploy Safe using **RelayClient**
-6. Obtain **User API Credentials** via temporary **ClobClient**
-7. Set token approvals (USDC.e + outcome tokens) in batch transaction
-8. Initialize authenticated **ClobClient** with credentials + builder config
-9. Ready to trade with builder attribution
-
-#### **Returning User Flow**
-
-1. User authenticates via Magic Link email login (retrieves existing wallet)
-2. Initialize **RelayClient** with builder config
-3. Load (or derive) existing **User API Credentials**
-4. Verify Safe is deployed (skip deployment)
-5. Verify token approvals (skip if already approved)
-6. Initialize authenticated **ClobClient** with credentials + builder config
-7. Ready to trade with builder attribution
-
----
-
-## Key Implementation Details
-
-### 1. Magic Link Authentication
-
-**Files**: `lib/magic.ts`, `providers/WalletContext.tsx`, `providers/WalletProvider.tsx`
-
-Users authenticate via Magic Link's UI, which handles email/social login and automatically provisions a non-custodial EOA wallet. No browser extension required.
-
-```typescript
-// lib/magic.ts - Magic singleton
-import { Magic as MagicBase } from "magic-sdk";
-
-let magic: MagicBase | null = null;
-
-export default function getMagic(): MagicBase | null {
-  if (typeof window === "undefined") return null;
-  if (magic) return magic;
-
-  magic = new MagicBase(process.env.NEXT_PUBLIC_MAGIC_API_KEY!, {
-    network: { rpcUrl: POLYGON_RPC_URL, chainId: polygon.id },
-  });
-  return magic;
-}
-
-// providers/WalletProvider.tsx - Creates viem + ethers clients
-const magic = getMagic();
-
-const walletClient = createWalletClient({
-  chain: polygon,
-  transport: custom(magic.rpcProvider),
-});
-
-// Ethers signer for @polymarket libraries
-const ethersProvider = new providers.Web3Provider(magic.rpcProvider);
-const ethersSigner = ethersProvider.getSigner();
-
-// Usage in components:
-import { useWallet } from "@/providers/WalletContext";
-
-const { eoaAddress, connect, disconnect, ethersSigner } = useWallet();
-await connect(); // Opens Magic auth UI
-```
-
----
-
-### 2. Builder Config with Remote Signing
-
-**File**: `app/api/polymarket/sign/route.ts`
-
-Builder credentials are stored server-side and accessed via a remote signing endpoint. This keeps your builder credentials secure while enabling order attribution or relay authentication.
-
-```typescript
-// Server-side API route
-import {
-  BuilderApiKeyCreds,
-  buildHmacSignature,
-} from "@polymarket/builder-signing-sdk";
-
-const BUILDER_CREDENTIALS: BuilderApiKeyCreds = {
-  key: process.env.POLYMARKET_BUILDER_API_KEY!,
-  secret: process.env.POLYMARKET_BUILDER_SECRET!,
-  passphrase: process.env.POLYMARKET_BUILDER_PASSPHRASE!,
-};
-
-export async function POST(request: NextRequest) {
-  const { method, path, body } = await request.json();
-  const sigTimestamp = Date.now().toString();
-
-  const signature = buildHmacSignature(
-    BUILDER_CREDENTIALS.secret,
-    parseInt(sigTimestamp),
-    method,
-    path,
-    body
-  );
-
-  return NextResponse.json({
-    POLY_BUILDER_SIGNATURE: signature,
-    POLY_BUILDER_TIMESTAMP: sigTimestamp,
-    POLY_BUILDER_API_KEY: BUILDER_CREDENTIALS.key,
-    POLY_BUILDER_PASSPHRASE: BUILDER_CREDENTIALS.passphrase,
-  });
-}
-```
-
-**Why remote signing?**
-
-- Builder secret never exposed to client
-- Secure HMAC signature generation
-- Required for builder order attribution (with ClobClient) or authentication (RelayClient)
-
-> **Security Note:** This reference implementation exposes builder credentials (API key + passphrase) to the client via the `/api/polymarket/sign` endpoint. For production deployments, implement one of:
-> - **Proxy pattern** - Server makes all CLOB/Relay requests, credentials never reach client
-> - **Auth token validation** - Require authenticated session before returning credentials
-
----
-
-### 3. RelayClient Initialization
-
-**File**: `hooks/useRelayClient.ts`
-
-The **RelayClient** is initialized with the user's Magic EOA signer (from WalletContext) and builder config. It's used for Safe deployment, token approvals, and CTF operations.
-
-```typescript
-import { RelayClient } from "@polymarket/builder-relayer-client";
-import { BuilderConfig } from "@polymarket/builder-signing-sdk";
-import { useWallet } from "@/providers/WalletContext";
-
-const { ethersSigner } = useWallet();
-
-const builderConfig = new BuilderConfig({
-  remoteBuilderConfig: {
-    url: "/api/polymarket/sign", // Your remote signing endpoint
-  },
-});
-
-const relayClient = new RelayClient(
-  "https://relayer-v2.polymarket.com/",
-  137, // Polygon chain ID
-  ethersSigner,
-  builderConfig
-);
-```
-
-**Key Points:**
-
-- Uses shared `ethersSigner` from WalletContext
-- Requires builder's config for authentication
-- Used for Safe deployment and approvals
-- Persisted throughout trading session
-
----
-
-### 4. Safe Deployment
-
-**File**: `hooks/useSafeDeployment.ts`
-
-The Safe address is deterministically derived from the user's Magic EOA, then deployed if it doesn't exist.
-
-```typescript
-import { deriveSafe } from "@polymarket/builder-relayer-client/dist/builder/derive";
-import { getContractConfig } from "@polymarket/builder-relayer-client/dist/config";
-
-// Step 1: Derive Safe address (deterministic)
-const config = getContractConfig(137); // Polygon
-const safeAddress = deriveSafe(eoaAddress, config.SafeContracts.SafeFactory);
-
-// Step 2: Check if Safe is deployed
-const deployed = await relayClient.getDeployed(safeAddress);
-
-// Step 3: Deploy Safe if needed (Magic handles signature)
-if (!deployed) {
-  const response = await relayClient.deploy();
-  const result = await response.wait();
-  console.log("Safe deployed at:", result.proxyAddress);
-}
-```
-
-**Important:**
-
-- Safe address is **deterministic** - same EOA always gets same Safe address
-- Safe is the "funder" address that holds USDC.e and outcome tokens
-- One-time deployment per EOA on user's first login
-- Magic handles the signature request
-
----
-
-### 5. User API Credentials
-
-**File**: `hooks/useUserApiCredentials.ts`
-
-User API Credentials are obtained by creating a temporary **ClobClient** and calling `deriveApiKey()`, `createApiKey()`, or `createOrDeriveApiKey()`.
-
-```typescript
-import { ClobClient } from "@polymarket/clob-client";
-import { useWallet } from "@/providers/WalletContext";
-
-const { ethersSigner } = useWallet();
-
-// Create temporary CLOB client (no credentials yet)
-const tempClient = new ClobClient(
-  "https://clob.polymarket.com",
-  137, // Polygon chain ID
-  ethersSigner
-);
-
-// Try to derive existing credentials (for returning users)
-let creds;
-try {
-  creds = await tempClient.deriveApiKey(); // Magic handles signature
-} catch (error) {
-  // If derive fails, create new credentials
-  creds = await tempClient.createApiKey(); // Magic handles signature
-}
-
-// creds = { key: string, secret: string, passphrase: string }
-```
-
-**Flow:**
-
-1. **First-time users**: `createApiKey()` creates new credentials
-2. **Returning users**: `deriveApiKey()` retrieves existing credentials
-3. Both methods require user signature (EIP-712)
-4. Credentials are stored in localStorage for future sessions
-
-**Important:**
-
-Credentials alone are not enough to place new orders. However, they can be used to view orders and to cancel limit orders. Storing the user's credentials in localStorage is **not recommended for production** due to XSS vulnerability risks. This demo prioritizes simplicity over security—in production, use secure httpOnly cookies or server-side session management instead.
-
-**Why temporary client?**
-
-- Credentials are needed to create the authenticated client
-- Temporary client is destroyed after obtaining credentials
-
----
-
-### 6. Token Approvals
-
-**Files**: `hooks/useTokenApprovals.ts`, `utils/approvals.ts`
-
-Before trading, the Safe must approve **multiple contracts** to spend USDC.e and manage outcome tokens. This involves setting approvals for both **ERC-20 (USDC.e)** and **ERC-1155 (outcome tokens)**.
-
-#### Required Approvals
-
-**USDC.e (ERC-20) Approvals:**
-
-- CTF Contract: `0x4d97dcd97ec945f40cf65f87097ace5ea0476045`
-- CTF Exchange: `0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E`
-- Neg Risk CTF Exchange: `0xC5d563A36AE78145C45a50134d48A1215220f80a`
-- Neg Risk Adapter: `0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`
-
-**Outcome Token (ERC-1155) Approvals:**
-
-- CTF Exchange: `0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E`
-- Neg Risk CTF Exchange: `0xC5d563A36AE78145C45a50134d48A1215220f80a`
-- Neg Risk Adapter: `0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`
-
-#### Implementation
-
-```typescript
-import { createAllApprovalTxs, checkAllApprovals } from "@/utils/approvals";
-
-// Step 1: Check existing approvals
-const approvalStatus = await checkAllApprovals(safeAddress);
-
-if (approvalStatus.allApproved) {
-  console.log("All approvals already set");
-  // Skip approval step
-} else {
-  // Step 2: Create approval transactions
-  const approvalTxs = createAllApprovalTxs();
-  // Returns array of SafeTransaction objects
-
-  // Step 3: Execute all approvals in a single batch
-  const response = await relayClient.execute(
-    approvalTxs,
-    "Set all token approvals for trading"
-  );
-
-  await response.wait();
-  console.log("All approvals set successfully");
-}
-```
-
-#### Approval Transaction Structure
-
-Each approval transaction is a `SafeTransaction`:
-
-```typescript
-// ERC-20 approval (USDC.e)
-{
-  to: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC.e address
-  operation: OperationType.Call,
-  data: erc20Interface.encodeFunctionData('approve', [
-    spenderAddress,
-    MAX_UINT256 // Unlimited approval
-  ]),
-  value: '0'
-}
-
-// ERC-1155 approval (outcome tokens)
-{
-  to: '0x4d97dcd97ec945f40cf65f87097ace5ea0476045', // CTF Contract address
-  operation: OperationType.Call,
-  data: erc1155Interface.encodeFunctionData('setApprovalForAll', [
-    operatorAddress,
-    true // Enable operator
-  ]),
-  value: '0'
-}
-```
-
-#### Why Multiple Approvals?
-
-Polymarket's trading system uses different contracts for different market types:
-
-- **CTF Contract**: Manages outcome tokens (ERC-1155)
-- **CTF Exchange**: Standard binary markets
-- **Neg Risk CTF Exchange**: Negative risk markets (mutually exclusive outcomes)
-- **Neg Risk Adapter**: Converts between neg risk and standard markets
-
-Setting all approvals upfront ensures:
-
-- Users can trade in any market type
-- One-time setup (approvals persist across sessions)
-- Gasless execution via RelayClient
-- Single user signature for all approvals
-
-#### Checking Approvals
-
-Before setting approvals, the app checks onchain state:
-
-```typescript
-// Check USDC.e approval
-const allowance = await publicClient.readContract({
-  address: USDC_E_ADDRESS,
-  abi: ERC20_ABI,
-  functionName: "allowance",
-  args: [safeAddress, spenderAddress],
-});
-
-const isApproved = allowance >= threshold; // 1000000000000 (1M USDC.e)
-
-// Check outcome token approval
-const isApprovedForAll = await publicClient.readContract({
-  address: CTF_CONTRACT_ADDRESS,
-  abi: ERC1155_ABI,
-  functionName: "isApprovedForAll",
-  args: [safeAddress, operatorAddress],
-});
-```
-
-**Key Points:**
-
-- Uses **batch execution** via `relayClient.execute()` for gas efficiency
-- Sets **unlimited approvals** (MaxUint256) for ERC-20 tokens
-- Sets **operator approvals** for ERC-1155 outcome tokens
-- One-time setup per Safe (persists across sessions)
-- User signs once to approve all transactions (Magic handles signature)
-- Gasless for the user
-
----
-
-### 7. Authenticated ClobClient
-
-**File**: `hooks/useClobClient.ts`
-
-After obtaining User API Credentials, create the authenticated **ClobClient** with builder config.
-
-```typescript
-import { ClobClient } from "@polymarket/clob-client";
-import { BuilderConfig } from "@polymarket/builder-signing-sdk";
-import { useWallet } from "@/providers/WalletContext";
-
-const { ethersSigner } = useWallet();
-
-const builderConfig = new BuilderConfig({
-  remoteBuilderConfig: {
-    url: "/api/polymarket/sign",
-  },
-});
-
-const clobClient = new ClobClient(
-  "https://clob.polymarket.com",
-  137, // Polygon chain ID
-  ethersSigner,
-  userApiCredentials, // { key, secret, passphrase }
-  2, // signatureType = 2 for EOA associated to a Gnosis Safe proxy wallet
-  safeAddress, // funder address from step 4
-  undefined, // mandatory placeholder
-  false,
-  builderConfig // Builder order attribution
-);
-```
-
-**Parameters Explained:**
-
-- **ethersSigner**: Shared signer from WalletContext
-- **userApiCredentials**: Obtained from Step 5
-- **signatureType = 2**: Type indicating EOA associated to a Gnosis Safe proxy wallet
-- **safeAddress**: The Safe proxy wallet address that holds funds
-- **builderConfig**: Enables order attribution
-
-**This is the persistent client used for all trading operations.**
-
----
-
-### 8. Placing Orders
-
-**File**: `hooks/useClobOrder.ts`
-
-With the authenticated ClobClient, you can place orders with builder attribution.
-
-```typescript
-// Create order
-const order = {
-  tokenID: "0x...", // Outcome token address
-  price: 0.65, // Price in decimal (65 cents)
-  size: 10, // Number of shares
-  side: "BUY", // or 'SELL'
-  feeRateBps: 0,
-  expiration: 0, // 0 = Good-til-Cancel
-  taker: "0x0000000000000000000000000000000000000000",
-};
-
-// Submit order (Magic handles signature)
-const response = await clobClient.createAndPostOrder(
-  order,
-  { negRisk: false }, // Market-specific flag
-  OrderType.GTC
-);
-
-console.log("Order ID:", response.orderID);
-```
-
-**Key Points:**
-
-- Orders are signed by the user's Magic EOA
-- Executed from the Safe address (funder)
-- Builder attribution is automatic via builderConfig
-- Gasless execution (no gas fees for users)
-
-**Cancel Order:**
-
-```typescript
-await clobClient.cancelOrder({ orderID: "order_id_here" });
-```
-
----
-
 ## Project Structure
 
-### Core Implementation Files
-
 ```
-polymarket-magic-safe/
+bofet-paper-trading/
 ├── app/
 │   ├── api/
-│   │   └── polymarket/
-│   │       └── sign/
-│   │           └── route.ts              # Remote signing endpoint
-│   └── page.tsx                          # Main application UI
+│   │   ├── claim-pmt/route.ts            # PMT faucet (10 PMT + gas per claim)
+│   │   ├── vault-payout/route.ts          # Returns PMT to user on sell
+│   │   ├── polymarket/
+│   │   │   ├── midpoint/route.ts          # CLOB midpoint price proxy
+│   │   │   ├── sign/route.ts              # Builder credential signing
+│   │   │   ├── markets/route.ts           # Market listing proxy
+│   │   │   └── market-by-slug/route.ts    # Single market proxy
+│   │   ├── send-gas/route.ts              # Gas relayer (Polygon)
+│   │   └── redis/route.ts                 # Redis cache operations
+│   └── [lang]/
+│       ├── page.tsx                       # Home / market discovery
+│       ├── market/[marketSlug]/page.tsx   # Market detail page
+│       └── positions/page.tsx             # User positions page
 │
-├── lib/
-│   └── magic.ts                          # Magic singleton instance
+├── components/
+│   ├── Market/
+│   │   ├── TradingPaperModal.tsx          # Paper trading modal (buy/sell)
+│   │   ├── TradingButtons.tsx             # Yes/No trade buttons
+│   │   └── index.tsx                      # Market detail view
+│   ├── Navbar/
+│   │   ├── ClaimPMTButton.tsx             # Faucet claim dropdown
+│   │   ├── PMTBalance.tsx                 # PMT balance display
+│   │   └── index.tsx                      # Main navbar
+│   └── Trading/
+│       ├── OrderModal/PaperOrderModal.tsx # Quick buy modal (market list)
+│       ├── Positions/
+│       │   ├── PaperPositionCard.tsx      # Position card with P&L
+│       │   └── PaperUserPositions.tsx     # Positions dashboard
+│       └── Markets/                       # Market list with outcome buttons
 │
 ├── hooks/
-│   ├── useTradingSession.ts              # Session orchestration (main flow)
-│   ├── useRelayClient.ts                 # RelayClient initialization
-│   ├── useSafeDeployment.ts              # Safe deployment logic
-│   ├── useUserApiCredentials.ts          # User API credential derivation
-│   ├── useTokenApprovals.ts              # Token approval management
-│   ├── useClobClient.ts                  # Authenticated CLOB client
-│   └── useClobOrder.ts                   # Order placement/cancellation
+│   ├── usePaperOrder.ts                   # Paper order execution flow
+│   ├── usePaperPositions.ts               # CRUD for positions in Supabase
+│   ├── usePMTBalance.ts                   # PMT ERC-20 balance (Base Sepolia)
+│   ├── useClaimPMT.ts                     # Claim PMT from faucet
+│   ├── usePMTTransfer.ts                  # Transfer PMT to vault (Magic SDK)
+│   └── useTradingSession.ts               # Trading session orchestration
 │
-├── providers/
-│   ├── index.tsx                         # Combined providers export
-│   ├── WalletContext.tsx                 # Wallet context and useWallet hook
-│   ├── WalletProvider.tsx                # Magic auth + viem/ethers clients
-│   ├── TradingProvider.tsx               # Trading session + client context
-│   └── QueryProvider.tsx                 # React Query provider
+├── lib/
+│   ├── magic.ts                           # Magic SDK (Polygon)
+│   ├── magicBaseSepolia.ts                # Magic SDK (Base Sepolia)
+│   └── supabase.ts                        # Supabase client
 │
-├── utils/
-│   ├── session.ts                        # Session persistence (localStorage)
-│   └── approvals.ts                      # Token approval utilities
+├── types/
+│   └── database.types.ts                  # Auto-generated Supabase types
 │
 └── constants/
-    ├── polymarket.ts                     # API URLs and constants
-    └── tokens.ts                         # Token addresses
+    └── api.ts                             # API URLs, RPC config
 ```
-
-### Key Hook: `useTradingSession.ts`
-
-This is the **orchestrator** that manages the entire trading session lifecycle:
-
-```typescript
-// Coordinates:
-// 1. Initialize RelayClient with builder config
-// 2. Derive Safe address
-// 3. Check if Safe is deployed → deploy if needed
-// 4. Get User API Credentials → derive or create
-// 5. Check token approvals → approve if needed (batch)
-// 6. Save session to localStorage
-// 7. Initialize authenticated ClobClient
-
-const {
-  tradingSession,
-  currentStep,
-  initializeTradingSession,
-  endTradingSession,
-  relayClient,
-  isTradingSessionComplete,
-} = useTradingSession();
-```
-
-**Read this hook first** to understand the complete flow.
 
 ---
 
-## Environment Variables
+## PMT Token
 
-Create `.env.local`:
+- **Contract**: `0x8CC5e000199Ad0295491Fc4f6e8CC16e7108C270`
+- **Network**: Base Sepolia (chain ID 84532)
+- **Decimals**: 18
+- **Purpose**: Testnet token for paper trading, no real value
 
-```bash
-# Required: Polygon RPC
-NEXT_PUBLIC_POLYGON_RPC_URL=https://polygon-rpc.com
-
-# Required: Magic Link API key (from magic.link dashboard)
-NEXT_PUBLIC_MAGIC_API_KEY=pk_live_XXXXXXXXXXXXXXXX
-
-# Required: Builder credentials (from polymarket.com/settings?tab=builder)
-POLYMARKET_BUILDER_API_KEY=your_builder_api_key
-POLYMARKET_BUILDER_SECRET=your_builder_secret
-POLYMARKET_BUILDER_PASSPHRASE=your_builder_passphrase
-```
+The faucet wallet (`PMT_FAUCET_PRIVATE_KEY`) must hold:
+- PMT tokens to distribute to users
+- ETH on Base Sepolia to cover gas for user transactions
 
 ---
 
 ## Key Dependencies
 
-| Package                                                                                                  | Version  | Purpose                                          |
-| -------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------ |
-| [`magic-sdk`](https://magic.link/docs)                                                                   | ^31.2.0  | Authentication / Embedded Wallet                 |
-| [`@polymarket/clob-client`](https://github.com/Polymarket/clob-client)                                   | ^4.22.8  | Order placement, User API credentials            |
-| [`@polymarket/builder-relayer-client`](https://www.npmjs.com/package/@polymarket/builder-relayer-client) | ^0.0.6   | Safe deployment, token approvals, CTF operations |
-| [`@polymarket/builder-signing-sdk`](https://www.npmjs.com/package/@polymarket/builder-signing-sdk)       | ^0.0.8   | Builder credential HMAC signatures               |
-| [`viem`](https://viem.sh/)                                                                               | ^2.39.2  | Ethereum interactions, RPC calls                 |
-| [`ethers`](https://docs.ethers.org/v5/)                                                                  | ^5.8.0   | Wallet signing, EIP-712 messages                 |
-| [`@tanstack/react-query`](https://tanstack.com/query)                                                    | ^5.90.10 | Server state management                          |
-| [`next`](https://nextjs.org/)                                                                            | ^16.0.10 | React framework, API routes                      |
-
----
-
-## Architecture Diagram
-
-```
-User (email login)
-         ↓
-    [Magic Link Auth]
-         ↓
-    Magic EOA (via TKMS)
-         ↓
-┌────────────────────────────────────────────────────┐
-│  Trading Session Initialization                    │
-├────────────────────────────────────────────────────┤
-│  1. Initialize RelayClient (with builder config)   │
-│  2. Derive Safe address from EOA                   │
-│  3. Check if Safe deployed → deploy if needed      │
-│  4. Get User API Credentials (derive or create)    │
-│  5. Set token approvals (batch execution):         │
-│     - USDC.e → 4 spenders (ERC-20)                 │
-│     - Outcome tokens → 3 operators (ERC-1155)      │
-│  6. Save session to localStorage                   │
-└────────────────────────────────────────────────────┘
-         ↓
-┌────────────────────────────────────────────────────┐
-│  Authenticated ClobClient                          │
-├────────────────────────────────────────────────────┤
-│  - User API Credentials                            │
-│  - Builder Config (remote signing)                 │
-│  - Safe address (funder)                           │
-│  - Magic EOA signer                                │
-└────────────────────────────────────────────────────┘
-         ↓
-    Place Orders
-    (Standard + Neg Risk markets)
-    (with builder attribution)
-```
-
----
-
-## Troubleshooting
-
-### "Magic authentication failed"
-
-- Verify `NEXT_PUBLIC_MAGIC_API_KEY` is set correctly in `.env.local`
-- Check Magic dashboard for any API key restrictions
-- Ensure you're using a Publishable API Key (starts with `pk_`)
-
-### "Failed to initialize relay client"
-
-- Check builder credentials in `.env.local`
-- Verify `/api/polymarket/sign` endpoint is accessible
-- Check browser console for errors
-
-### "Safe deployment failed"
-
-- Check Polygon RPC URL is valid
-- User must approve signature via Magic
-- Verify builder credentials are configured correctly
-- Check browser console for relay service errors
-
-### "Token approval failed"
-
-- Safe must be deployed first
-- User must approve transaction signature via Magic
-- Verify builder relay service is operational
-
-### Orders not appearing
-
-- Verify trading session is complete
-- Check Safe has USDC.e balance
-- Wait 2-3 seconds for CLOB sync
-
----
-
-## Resources
-
-### Polymarket Documentation
-
-- [CLOB Client Docs](https://docs.polymarket.com/developers/CLOB/clients)
-- [Builder Program](https://docs.polymarket.com/developers/builder-program)
-- [Authentication](https://docs.polymarket.com/developers/CLOB/authentication)
-- [Order Placement](https://docs.polymarket.com/quickstart/orders/first-order)
-
-### Magic Link Documentation
-
-- [Magic SDK Docs](https://magic.link/docs)
-- [Ethereum Integration](https://magic.link/docs/blockchains/ethereum)
-
-### GitHub Repositories
-
-- [clob-client](https://github.com/Polymarket/clob-client)
-- [builder-relayer-client](https://www.npmjs.com/package/@polymarket/builder-relayer-client)
-
-### Other Resources
-
-- [viem Documentation](https://viem.sh/)
-- [Safe (Gnosis Safe)](https://docs.safe.global/)
-- [EIP-712 Specification](https://eips.ethereum.org/EIPS/eip-712)
+| Package | Purpose |
+|---------|---------|
+| `magic-sdk` | Email auth + embedded wallets |
+| `@supabase/supabase-js` | Positions, trades, claims database |
+| `viem` | ERC-20 interactions on Base Sepolia |
+| `@tanstack/react-query` | Client state + caching |
+| `@polymarket/clob-client` | Market data (prices, orderbook) |
+| `@polymarket/builder-signing-sdk` | Builder API authentication |
+| `next` | React framework + API routes |
 
 ---
 
@@ -760,7 +261,3 @@ Questions or issues? Reach out on Telegram: **[@notyrjo](https://t.me/notyrjo)**
 ## License
 
 MIT
-
----
-
-**Built for builders exploring the Polymarket ecosystem with Magic Link authentication**

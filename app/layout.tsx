@@ -58,27 +58,6 @@ export default function RootLayout({
           "antialiased"
         )}
       >
-        {/* DataFast Queue Script (for reliable user identification) */}
-        <Script
-          id="datafast-queue"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.datafast = window.datafast || function() {
-                window.datafast.q = window.datafast.q || [];
-                window.datafast.q.push(arguments);
-              };
-            `,
-          }}
-        />
-        {/* DataFast Tracking Script */}
-        <Script
-          data-website-id={process.env.NEXT_PUBLIC_DATAFAST_WEBSITE_ID}
-          data-domain={config.domainName}
-          data-allow-localhost={process.env.NODE_ENV === "development" ? "true" : undefined}
-          src="https://datafa.st/js/script.js"
-          strategy="afterInteractive"
-        />
         {/* ContentSquare UX Analytics */}
         <Script
           id="contentsquare-uxa"

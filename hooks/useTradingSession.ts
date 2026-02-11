@@ -102,22 +102,6 @@ export default function useTradingSession() {
           safeAddress: derivedSafeAddressFromEoa,
         });
 
-        // Track wallet creation goal via backend route
-        try {
-          await fetch("/api/datafast/goal", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: "wallet_created",
-            }),
-          });
-        } catch (err) {
-          // Log error but don't block the flow
-          console.error("[useTradingSession] Failed to track wallet creation goal", err);
-        }
-
         // Store the creation timestamp in Redis
         const timestamp = new Date().toISOString();
         console.log("[useTradingSession] Attempting to store member since timestamp", {

@@ -423,10 +423,6 @@ export default function TradingModal({
                 {isInsufficientBalance && (
                   <button
                     onClick={() => {
-                      // Track deposit modal trigger goal
-                      if (typeof window !== 'undefined' && (window as any).datafast) {
-                        (window as any).datafast('deposit_modal_triggered');
-                      }
                       setIsDepositModalOpen(true);
                     }}
                     className="mt-2 w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"

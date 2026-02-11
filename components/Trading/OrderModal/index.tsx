@@ -267,9 +267,6 @@ export default function OrderPlacementModal({
                 {isInsufficientBalance && (
                   <button
                     onClick={() => {
-                      if (typeof window !== "undefined" && (window as any).datafast) {
-                        (window as any).datafast("deposit_modal_triggered");
-                      }
                       onClose();
                       openPaymentModal();
                     }}

@@ -188,10 +188,6 @@ export default function Navbar(props: NavbarProps = {}) {
   const handleConnect = async () => {
     if (!eoaAddress) {
       // Step 1: Connect wallet
-      // Track signup goal
-      if (typeof window !== 'undefined' && (window as any).datafast) {
-        (window as any).datafast('signup');
-      }
       await connect();
     } else if (!isTradingSessionComplete) {
       // Step 2: Initialize trading session

@@ -199,10 +199,6 @@ export function OnboardingWelcome({ onComplete }: OnboardingWelcomeProps) {
     } finally {
       setIsSaving(false);
       setIsVisible(false);
-      // Track onboarding completion goal
-      if (typeof window !== 'undefined' && (window as any).datafast) {
-        (window as any).datafast('onboarding_complete');
-      }
       setTimeout(() => {
         onComplete();
       }, 300);

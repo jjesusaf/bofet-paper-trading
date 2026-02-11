@@ -130,9 +130,6 @@ export default function PortfolioCashBalance() {
               {/* Payment Button - Left Section */}
               <button
                 onClick={() => {
-                  if (typeof window !== "undefined" && (window as any).datafast) {
-                    (window as any).datafast("deposit_modal_triggered");
-                  }
                   openPaymentModal();
                 }}
                 title={dict.navbar?.payment ?? "Payment"}

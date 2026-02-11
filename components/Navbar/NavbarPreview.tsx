@@ -17,10 +17,6 @@ export default function NavbarPreview() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleConnectClick = async () => {
-    // Track signup goal
-    if (typeof window !== 'undefined' && (window as any).datafast) {
-      (window as any).datafast('signup');
-    }
     // Start loading animation before navigation
     startLoading();
     await connect();

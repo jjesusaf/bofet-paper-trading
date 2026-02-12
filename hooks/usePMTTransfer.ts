@@ -50,8 +50,11 @@
         // but it's accessible at runtime. Cast to `any` to bypass TS.
         const provider = magic.rpcProvider as any;
 
+        // Use eth_requestAccounts so the Base Sepolia provider can attach the same
+        // Magic session (same API key) and return accounts without a second login.
+        // eth_accounts alone returns [] when this instance was never "connected".
         const accounts: string[] = await provider.request({
-          method: "eth_accounts",
+          method: "eth_requestAccounts",
         });
 
         if (!accounts || accounts.length === 0) {

@@ -94,10 +94,12 @@
               throw err;
             }
 
+            let txHash: string | undefined;
+
             // 1. Transferir PMT on-chain (user → vault)
             setStatus("transferring-pmt");
             setProgressMessage("Transfiriendo PMT...");
-            const txHash = await transferToVault(cost);
+            txHash = await transferToVault(cost);
 
             // 2. Guardar posición en Supabase
             setStatus("saving-position");

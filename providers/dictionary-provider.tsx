@@ -269,6 +269,8 @@ type Dictionary = {
       redeemable: string
       hidingDustPositions?: string
       showingAll?: string
+      totalInvested?: string
+      realizedPnl?: string
     }
     orders: {
       market: string
